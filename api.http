@@ -28,8 +28,8 @@ Content-Type: application/json
   ]
 }
 
-### Update Workout 1
-PUT {{host}}/workouts/1
+### Update Workout
+PUT {{host}}/workouts/2
 Content-Type: application/json
 
 {
@@ -93,7 +93,10 @@ Content-Type: application/json
 }
 
 ### Get Workout 2
-GET {{host}}/workouts/2
+GET {{host}}/workouts/1
+
+### Delete Workout 2
+DELETE {{host}}/workouts/2
 
 ### Update Workout 2
 PUT {{host}}/workouts/2
