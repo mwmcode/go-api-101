@@ -37,8 +37,8 @@ type WorkoutStore interface {
 	DeleteWorkoutByID(id int64) error
 }
 
-func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error) {
-	tx, err := pg.db.Begin()
+func (pgStore *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error) {
+	tx, err := pgStore.db.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,13 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 	VALUES ($1, $2, $3, $4)
 	RETURNING id
 	`
-	err = tx.QueryRow(query, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned).Scan(&workout.ID)
+	err = tx.QueryRow(query,
+		workout.Title,
+		workout.Description,
+		workout.DurationMinutes,
+		workout.CaloriesBurned,
+	).Scan(&workout.ID)
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +66,17 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id
 		`
-		err = tx.QueryRow(query, workout.ID, entry.ExerciseName, entry.Sets, entry.Reps, entry.DurationSeconds, entry.Weight, entry.Notes, entry.OrderIndex).Scan(&workout.Entries[i].ID)
+		err = tx.QueryRow(query,
+			workout.ID,
+			entry.ExerciseName,
+			entry.Sets,
+			entry.Reps,
+			entry.DurationSeconds,
+			entry.Weight,
+			entry.Notes,
+			entry.OrderIndex,
+		).Scan(&workout.Entries[i].ID)
+
 		if err != nil {
 			return nil, err
 		}
@@ -72,14 +88,21 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 	return workout, nil
 }
 
-func (pg *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
+func (pgStore *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	workout := &Workout{}
 	query := `
 	SELECT id, title, description, duration_minutes, calories_burned
 	FROM workouts
 	WHERE id = $1
 	`
-	err := pg.db.QueryRow(query, id).Scan(&workout.ID, &workout.Title, &workout.Description, &workout.DurationMinutes, &workout.CaloriesBurned)
+	err := pgStore.db.QueryRow(query, id).Scan(
+		&workout.ID,
+		&workout.Title,
+		&workout.Description,
+		&workout.DurationMinutes,
+		&workout.CaloriesBurned,
+	)
+
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -92,7 +115,7 @@ func (pg *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	WHERE workout_id = $1
 	ORDER BY order_index
 	`
-	rows, err := pg.db.Query(entryQuery, id)
+	rows, err := pgStore.db.Query(entryQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +142,8 @@ func (pg *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	return workout, nil
 }
 
-func (pg *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
-	tx, err := pg.db.Begin()
+func (pgStore *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
+	tx, err := pgStore.db.Begin()
 	if err != nil {
 		return err
 	}
@@ -131,7 +154,14 @@ func (pg *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
 	SET title = $1, description = $2, duration_minutes = $3, calories_burned = $4
 	WHERE id = $5`
 
-	result, err := tx.Exec(query, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned, workout.ID)
+	result, err := tx.Exec(query,
+		workout.Title,
+		workout.Description,
+		workout.DurationMinutes,
+		workout.CaloriesBurned,
+		workout.ID,
+	)
+
 	if err != nil {
 		return err
 	}

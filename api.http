@@ -93,7 +93,7 @@ Content-Type: application/json
 }
 
 ### Get Workout 2
-GET {{host}}/workouts/1
+GET {{host}}/workouts/12
 
 ### Delete Workout 2
 DELETE {{host}}/workouts/2
@@ -222,3 +222,13 @@ Content-Type: application/json
   ]
 }
 
+###
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "username": "jane_doe",
+  "email": "jane101@example.com",
+  "password": "123pass",
+  "bio": "wip"
+}

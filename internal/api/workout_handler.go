@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fem/internal/dto"
 	"fem/internal/store"
 	"fem/internal/utils"
 	"log"
@@ -33,6 +34,11 @@ func (wh *WorkoutHandler) HandleGetWorkoutByID(w http.ResponseWriter, r *http.Re
 	if err != nil {
 		wh.logger.Printf("ERROR: GetWorkoutByID %v", err)
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "internal server error"})
+		return
+	}
+
+	if workout == nil {
+		http.NotFound(w, r)
 		return
 	}
 
@@ -79,37 +85,33 @@ func (wh *WorkoutHandler) HandleUpdateWorkoutByID(w http.ResponseWriter, r *http
 		return
 	}
 
-	var updateWorkoutDTO struct {
-		Title           *string              `json:"title"`
-		Description     *string              `json:"description"`
-		DurationMinutes *int                 `json:"duration_minutes"`
-		CaloriesBurned  *int                 `json:"calories_burned"`
-		Entries         []store.WorkoutEntry `json:"entries"`
-	}
+	var updateWorkoutRequest dto.UpdateWorkoutDTO
 
-	err = json.NewDecoder(r.Body).Decode(&updateWorkoutDTO)
+	err = json.NewDecoder(r.Body).Decode(&updateWorkoutRequest)
 	if err != nil {
 		wh.logger.Printf("ERROR: decoding update request body %v", err)
 		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "invalid request"})
 		return
 	}
 
-	if updateWorkoutDTO.Title != nil {
-		// 💡 using *pointers here to check for 0-values
-		// iow, to ensure `updateWorkoutDTO` has an actual value in those fields
-		existingWorkout.Title = *updateWorkoutDTO.Title
+	/**
+	* 💡 using *pointers below to catch 0-values, for example:
+	* Title would point to `nil` if no value was set in the request
+	*/
+	if updateWorkoutRequest.Title != nil {
+		existingWorkout.Title = *updateWorkoutRequest.Title
 	}
-	if updateWorkoutDTO.Description != nil {
-		existingWorkout.Description = *updateWorkoutDTO.Description
+	if updateWorkoutRequest.Description != nil {
+		existingWorkout.Description = *updateWorkoutRequest.Description
 	}
-	if updateWorkoutDTO.DurationMinutes != nil {
-		existingWorkout.DurationMinutes = *updateWorkoutDTO.DurationMinutes
+	if updateWorkoutRequest.DurationMinutes != nil {
+		existingWorkout.DurationMinutes = *updateWorkoutRequest.DurationMinutes
 	}
-	if updateWorkoutDTO.CaloriesBurned != nil {
-		existingWorkout.CaloriesBurned = *updateWorkoutDTO.CaloriesBurned
+	if updateWorkoutRequest.CaloriesBurned != nil {
+		existingWorkout.CaloriesBurned = *updateWorkoutRequest.CaloriesBurned
 	}
-	if updateWorkoutDTO.Entries != nil {
-		existingWorkout.Entries = updateWorkoutDTO.Entries
+	if updateWorkoutRequest.Entries != nil {
+		existingWorkout.Entries = updateWorkoutRequest.Entries
 	}
 
 	err = wh.workoutStore.UpdateWorkout(existingWorkout)
