@@ -11,3 +11,16 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     restart: unless-stopped
+
+  test_db:
+    container_name: "workout_test_db"
+    image: postgres:17.4-alpine
+    volumes:
+      - "./database/postgres-test-data:/var/lib/posgresql/data:rw"
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    restart: unless-stopped
