@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/go:1.23
+FROM mcr.microsoft.com/devcontainers/go:latest
 
 EXPOSE 9090
 # [Optional] Uncomment this section to install additional OS packages.
