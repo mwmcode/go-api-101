@@ -227,8 +227,17 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-  "username": "jane_doe",
-  "email": "jane101@example.com",
+  "username": "nora",
+  "email": "nora@example.com",
   "password": "123pass",
   "bio": "wip"
+}
+
+###
+POST {{host}}/tokens/auth
+Content-Type: application/json
+
+{
+  "username": "nora",
+  "password": "123pass"
 }
