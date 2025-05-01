@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fem/internal/dto"
+	"fem/internal/middleware"
 	"fem/internal/store"
 	"fem/internal/utils"
 	"log"
@@ -55,6 +56,8 @@ func (wh *WorkoutHandler) HandleCreateWorkout(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	workout.UserID = middleware.GetUser(r).ID
+
 	createdWorkout, err := wh.workoutStore.CreateWorkout(&workout)
 	if err != nil {
 		wh.logger.Printf("ERROR: CreateWorkout %v", err)
@@ -97,7 +100,7 @@ func (wh *WorkoutHandler) HandleUpdateWorkoutByID(w http.ResponseWriter, r *http
 	/**
 	* 💡 using *pointers below to catch 0-values, for example:
 	* Title would point to `nil` if no value was set in the request
-	*/
+	 */
 	if updateWorkoutRequest.Title != nil {
 		existingWorkout.Title = *updateWorkoutRequest.Title
 	}

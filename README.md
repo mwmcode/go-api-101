@@ -7,4 +7,4 @@ If you already have VS Code and Docker installed, you can click the badge above 
 
 
 - Run `go run main.go`
-- Open `api.http` (_using VSCode Rest Client extention which is already included in this DevContainer)
+- Open `api.http` (_using VSCode Rest Client extention which is already included in this DevContainer_)
