@@ -5,6 +5,7 @@ If you already have VS Code and Docker installed, you can click the badge above 
 
 [VSCode Dev Container](https://code.visualstudio.com/docs/devcontainers/create-dev-container)
 
+[📺 Get Started with Dev Containers in VS Code](https://www.youtube.com/watch?v=b1RavPr_878)
 
 - Run `go run main.go`
 - Open `api.http` (_using VSCode Rest Client extention which is already included in this DevContainer_)
